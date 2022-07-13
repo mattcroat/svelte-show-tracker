@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Show {
+  id String @id @default(cuid())
+
+  name      String
+  slug      String  @unique
+  image     String
+  completed Boolean @default(false)
+  updated   Int
+
+  seasons Season[]
+}
+
+model Season {
+  id String @id @default(cuid())
+
+  number    Int
+  image     String
+  completed Boolean @default(false)
+
+  show   Show   @relation(fields: [showId], references: [id])
+  showId String
+
+  episodes Episode[]
+}
+
+model Episode {
+  id String @id @default(cuid())
+
+  name      String
+  number    Int
+  image     String
+  completed Boolean @default(false)
+
+  season   Season @relation(fields: [seasonId], references: [id])
+  seasonId String
+}
