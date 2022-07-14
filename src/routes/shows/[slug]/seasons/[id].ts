@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit'
-import { getEpisodes } from '$lib/api'
+import { completeEpisode, getEpisodes } from '$lib/api'
 
 export const get: RequestHandler = async ({ params }) => {
 	const name = params.slug
@@ -10,4 +10,13 @@ export const get: RequestHandler = async ({ params }) => {
 			episodes: await getEpisodes(name, season)
 		}
 	}
+}
+
+export const post: RequestHandler = async ({ request }) => {
+	const form = await request.formData()
+	const id = String(form.get('id'))
+
+	await completeEpisode(id)
+
+	return {}
 }
