@@ -76,6 +76,22 @@ export async function getShows() {
 	return await db.show.findMany()
 }
 
+export async function getSeasons(slug: string) {
+	const show = await db.show.findFirst({
+		where: { slug },
+		select: { name: true, seasons: true }
+	})
+
+	if (!show) {
+		throw new Error('Could not find show.')
+	}
+
+	return {
+		name: show.name,
+		seasons: show.seasons
+	}
+}
+
 export async function completeShow(id: string) {
 	const show = await db.show.findUnique({
 		where: { id },
