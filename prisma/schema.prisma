@@ -35,6 +35,7 @@ model Season {
 model Episode {
   id String @id @default(cuid())
 
+  show      String
   name      String
   number    Int
   image     String
