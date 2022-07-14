@@ -48,24 +48,26 @@ export async function addShowToDatabase(id: string) {
 		image: data.image.medium,
 		updated: data.updated,
 		seasons: {
-			create: data._embedded.seasons.map((season) => {
-				return {
-					number: season.number,
-					image: season.image.medium,
-					episodes: {
-						create: data._embedded.episodes
-							.filter((episode) => episode.season === season.number)
-							.map((episode) => {
-								return {
-									show: data.name,
-									name: episode.name,
-									number: episode.number,
-									image: episode.image.medium
-								}
-							})
+			create: data._embedded.seasons
+				.filter((season) => Boolean(season.premiereDate))
+				.map((season) => {
+					return {
+						number: season.number,
+						image: season.image.medium,
+						episodes: {
+							create: data._embedded.episodes
+								.filter((episode) => episode.season === season.number)
+								.map((episode) => {
+									return {
+										show: data.name,
+										name: episode.name,
+										number: episode.number,
+										image: episode.image.medium
+									}
+								})
+						}
 					}
-				}
-			})
+				})
 		}
 	}
 
