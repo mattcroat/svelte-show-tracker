@@ -79,4 +79,8 @@
 	.added {
 		opacity: 0.4;
 	}
+
+	.added button {
+		cursor: not-allowed;
+	}
 </style>
