@@ -92,6 +92,24 @@ export async function getSeasons(slug: string) {
 	}
 }
 
+export async function getEpisodes(name: string, season: number) {
+	const show = await db.show.findUnique({
+		where: { slug: name },
+		select: {
+			seasons: {
+				where: { number: season },
+				select: { episodes: true }
+			}
+		}
+	})
+
+	if (!show) {
+		throw new Error('Could not find show.')
+	}
+
+	return show.seasons[0].episodes
+}
+
 export async function completeShow(id: string) {
 	const show = await db.show.findUnique({
 		where: { id },
