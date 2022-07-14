@@ -57,6 +57,7 @@ export async function addShowToDatabase(id: string) {
 							.filter((episode) => episode.season === season.number)
 							.map((episode) => {
 								return {
+									show: data.name,
 									name: episode.name,
 									number: episode.number,
 									image: episode.image.medium
@@ -69,4 +70,34 @@ export async function addShowToDatabase(id: string) {
 	}
 
 	await db.show.create({ data: show })
+}
+
+export async function getShows() {
+	return await db.show.findMany()
+}
+
+export async function completeShow(id: string) {
+	const show = await db.show.findUnique({
+		where: { id },
+		select: { name: true, completed: true }
+	})
+
+	if (!show) {
+		throw new Error('Could not find show.')
+	}
+
+	await db.show.update({
+		where: { id },
+		data: { completed: !show.completed }
+	})
+
+	await db.season.updateMany({
+		where: { showId: id },
+		data: { completed: !show.completed }
+	})
+
+	await db.episode.updateMany({
+		where: { show: show.name },
+		data: { completed: !show.completed }
+	})
 }
