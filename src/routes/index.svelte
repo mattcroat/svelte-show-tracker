@@ -57,13 +57,13 @@
 				}}
 			>
 				<fieldset disabled={added}>
-					<h3>{name}</h3>
 					<input type="hidden" name="add" />
 					<input type="hidden" name="id" value={id} />
 					<button type="submit">
 						<img src={image} alt={name} />
 					</button>
 				</fieldset>
+				<p class="title">{name}</p>
 			</form>
 		{/each}
 	</div>
@@ -71,9 +71,13 @@
 
 <style>
 	.results {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0px, 210px));
+		gap: 2rem;
+	}
+
+	button {
+		background: none;
 	}
 
 	.added {
@@ -82,5 +86,9 @@
 
 	.added button {
 		cursor: not-allowed;
+	}
+
+	.title {
+		margin-top: 0.4rem;
 	}
 </style>

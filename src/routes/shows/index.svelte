@@ -6,9 +6,9 @@
 
 <h1>Shows</h1>
 
-<pre>
+<!-- <pre>
  {JSON.stringify(shows, null, 2)}
-</pre>
+</pre> -->
 
 <div class="shows">
 	{#each shows as { id, name, slug, image, completed }}
@@ -27,7 +27,9 @@
 
 <style>
 	.shows {
-		display: flex;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 210px));
+		gap: 2rem;
 	}
 
 	.show {
@@ -46,6 +48,7 @@
 	}
 
 	button {
+		background: none;
 		transition: transform 0.1s;
 	}
 

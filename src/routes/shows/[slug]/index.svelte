@@ -10,9 +10,9 @@
 
 <h1>{name}</h1>
 
-<pre>
+<!-- <pre>
  {JSON.stringify(seasons, null, 2)}
-</pre>
+</pre> -->
 
 <div class="seasons">
 	{#each seasons as { id, number, image, completed }}
@@ -31,8 +31,9 @@
 
 <style>
 	.seasons {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 210px));
+		gap: 2rem;
 	}
 
 	.season {
@@ -51,6 +52,7 @@
 	}
 
 	button {
+		background: none;
 		transition: transform 0.1s;
 	}
 
