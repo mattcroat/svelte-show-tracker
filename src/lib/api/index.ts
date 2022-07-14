@@ -117,3 +117,24 @@ export async function completeShow(id: string) {
 		data: { completed: !show.completed }
 	})
 }
+
+export async function completeSeason(id: string) {
+	const season = await db.season.findUnique({
+		where: { id },
+		select: { completed: true }
+	})
+
+	if (!season) {
+		throw new Error('Could not find season.')
+	}
+
+	await db.season.update({
+		where: { id },
+		data: { completed: !season.completed }
+	})
+
+	await db.episode.updateMany({
+		where: { seasonId: id },
+		data: { completed: !season.completed }
+	})
+}
