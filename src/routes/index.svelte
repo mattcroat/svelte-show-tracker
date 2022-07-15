@@ -7,10 +7,12 @@
 	let error: string
 </script>
 
-<h1>Track Shows</h1>
+<h2>Search</h2>
 
 <form
 	method="post"
+	class="search"
+	autocomplete="off"
 	use:enhanceForm={{
 		pending: () => {
 			status = 'loading'
@@ -27,25 +29,25 @@
 	}}
 >
 	<input type="hidden" name="search" />
-	<input type="search" name="show" />
-	<button type="submit">Search</button>
+	<input type="text" name="show" placeholder="Search for a show..." />
+	<button type="submit">Submit</button>
 </form>
 
 {#if status === 'loading'}
-	<h3>Loading...</h3>
+	<p class="loading">Loading...</p>
 {/if}
 
 {#if status === 'error'}
-	<h1>{error}</h1>
+	<p class="error">{error}</p>
 {/if}
 
 {#if status === 'loaded'}
 	<div class="results">
 		{#each results as { id, name, image, added }}
 			<form
+				method="post"
 				class="result"
 				class:added
-				method="post"
 				use:enhanceForm={{
 					error: async ({ response }) => {
 						const { message } = await response?.json()
@@ -70,25 +72,62 @@
 {/if}
 
 <style>
-	.results {
-		display: grid;
-		grid-template-columns: repeat(5, minmax(0px, 210px));
-		gap: 2rem;
+	h2 {
+		color: var(--teal-3);
+		font-size: var(--font-size-6);
+		padding-bottom: var(--size-3);
+		text-align: center;
 	}
 
-	button {
+	.search {
+		position: relative;
+		width: max-content;
+		margin: 0 auto;
+		box-shadow: var(--shadow-1);
+	}
+
+	.search input {
+		padding: var(--size-4) var(--size-8);
+		color: var(--gray-4);
+		font-size: var(--font-size-4);
+		background: var(--gray-8);
+		border-radius: var(--radius-3);
+		border: none;
+	}
+
+	.search input::placeholder {
+		color: var(--gray-6);
+	}
+
+	.search button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		padding: 0 var(--size-6);
+		color: var(--gray-0);
 		background: none;
 	}
 
-	.added {
-		opacity: 0.4;
+	.loading,
+	.error {
+		padding-top: var(--size-6);
+		font-size: var(--font-size-5);
 	}
 
-	.added button {
-		cursor: not-allowed;
+	.results {
+		display: grid;
+		grid-template-columns: var(--grid);
+		place-content: center;
+		gap: var(--size-7);
+		padding: var(--size-7) 0;
 	}
 
-	.title {
-		margin-top: 0.4rem;
+	.result img {
+		box-shadow: var(--shadow-3);
+	}
+
+	.result .title {
+		padding-top: var(--size-2);
 	}
 </style>
