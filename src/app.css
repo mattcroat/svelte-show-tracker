@@ -6,45 +6,54 @@
 	box-sizing: border-box;
 }
 
+:root {
+	--grid-5: repeat(5, minmax(0, 210px));
+}
+
 html {
 	height: 100%;
 }
 
 body {
 	height: 100%;
-	padding: 2rem;
-	font-family: 'Poppins', sans-serif;
-	color: hsl(220 20% 98%);
+	padding: var(--size-7);
+	font-family: 'Poppins', var(--font-sans);
+	color: var(--gray-0);
 	background: linear-gradient(hsl(220 20% 10%), hsl(220 20% 16%));
-}
-
-h1,
-h2,
-h3 {
-	margin: 1rem 0;
+	background-attachment: fixed;
 }
 
 a {
-	color: hsl(220 20% 98%);
+	color: var(--gray-4);
 	text-decoration: none;
 }
 
 a:hover {
-	text-decoration: underline;
+	color: var(--gray-0);
 }
 
 img {
 	width: 100%;
 	display: block;
 	border-radius: 8px;
+	border-radius: var(--radius-3);
 }
 
 button {
 	font: inherit;
 	border: none;
+	border-radius: var(--radius-3);
 	cursor: pointer;
 }
 
 fieldset {
 	border: none;
+}
+
+.added {
+	opacity: 0.4;
+}
+
+.added button {
+	cursor: not-allowed;
 }
