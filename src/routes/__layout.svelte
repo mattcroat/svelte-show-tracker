@@ -3,23 +3,32 @@
 	import '../app.css'
 </script>
 
-<header>
-	<h1>Track Shows</h1>
-	<nav>
-		<a href="/">Home</a>
-		<a href="/shows">Progress</a>
-	</nav>
-</header>
+<div class="container">
+	<header>
+		<h1>Track Shows</h1>
+		<nav>
+			<a href="/">Home</a>
+			<a href="/shows">Progress</a>
+		</nav>
+	</header>
 
-<main>
-	<slot />
-</main>
+	<main>
+		<slot />
+	</main>
+</div>
 
 <style>
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 var(--size-7);
+	}
+
 	header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		padding: var(--size-7) 0;
 	}
 
 	h1 {
@@ -30,11 +39,5 @@
 		display: flex;
 		justify-content: end;
 		gap: var(--size-3);
-	}
-
-	main {
-		display: grid;
-		justify-content: center;
-		justify-items: center;
 	}
 </style>
