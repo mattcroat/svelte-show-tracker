@@ -34,12 +34,20 @@
 </form>
 
 {#if status === 'loading'}
-	<p class="loading">Loading...</p>
+	<img
+		class="loading"
+		src="https://i.giphy.com/media/3o7abHrsGbV10rCeze/giphy.webp"
+		alt="Loading..."
+	/>
 {/if}
 
-{#if status === 'error'}
-	<p class="error">{error}</p>
-{/if}
+<!-- {#if status === 'error'} -->
+<img
+	class="error"
+	src="https://i.giphy.com/media/146BUR1IHbM6zu/giphy.webp"
+	alt="Error"
+/>
+<!-- {/if} -->
 
 {#if status === 'loaded'}
 	<div class="results">
@@ -111,8 +119,11 @@
 
 	.loading,
 	.error {
-		padding-top: var(--size-6);
-		font-size: var(--font-size-5);
+		height: 200px;
+		width: 200px;
+		margin: var(--size-10) auto;
+		border-radius: var(--radius-blob-4);
+		object-fit: cover;
 	}
 
 	.results {
