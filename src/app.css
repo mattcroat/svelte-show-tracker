@@ -7,7 +7,7 @@
 }
 
 :root {
-	--grid-5: repeat(5, minmax(0, 210px));
+	--grid: repeat(auto-fill, 210px);
 }
 
 html {
@@ -16,7 +16,6 @@ html {
 
 body {
 	height: 100%;
-	padding: var(--size-7);
 	font-family: 'Poppins', var(--font-sans);
 	color: var(--gray-0);
 	background: linear-gradient(hsl(220 20% 10%), hsl(220 20% 16%));
