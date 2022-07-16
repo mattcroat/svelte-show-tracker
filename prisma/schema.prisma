@@ -16,7 +16,8 @@ model Show {
   completed Boolean @default(false)
   updated   Int
 
-  seasons Season[]
+  seasons  Season[]
+  episodes Episode[]
 }
 
 model Season {
@@ -28,19 +29,17 @@ model Season {
 
   show   Show   @relation(fields: [showId], references: [id])
   showId String
-
-  episodes Episode[]
 }
 
 model Episode {
   id String @id @default(cuid())
 
-  show      String
   name      String
+  season    Int
   number    Int
   image     String
   completed Boolean @default(false)
 
-  season   Season @relation(fields: [seasonId], references: [id])
-  seasonId String
+  show   Show   @relation(fields: [showId], references: [id])
+  showId String
 }
