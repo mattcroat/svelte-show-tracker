@@ -5,9 +5,9 @@
 
 <div class="container">
 	<header>
-		<h1>Track Shows</h1>
+		<h1>🍿 Tracker</h1>
 		<nav>
-			<a href="/">Home</a>
+			<a href="/">Search</a>
 			<a href="/shows">Progress</a>
 		</nav>
 	</header>
