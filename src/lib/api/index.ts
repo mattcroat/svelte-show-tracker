@@ -35,6 +35,7 @@ export async function getSearchResults(name: string) {
 }
 
 export async function addShowToDatabase(id: string) {
+	// https://api.tvmaze.com/shows/2993?embed[]=seasons&embed[]=episodes
 	const data = await api(`/shows/${id}?embed[]=seasons&embed[]=episodes`)
 	const added = Boolean(await db.show.count({ where: { name: data.name } }))
 
@@ -42,36 +43,65 @@ export async function addShowToDatabase(id: string) {
 		throw new Error(`${data.name} already exists.`)
 	}
 
+	// const show = {
+	// 	name: data.name,
+	// 	slug: data.name.toLowerCase().split(' ').join('-'),
+	// 	image: data.image.medium,
+	// 	updated: data.updated,
+	// 	seasons: {
+	// 		create: data._embedded.seasons
+	// 			.filter((season) => Boolean(season.premiereDate))
+	// 			.map((season) => {
+	// 				return {
+	// 					number: season.number,
+	// 					image: season.image.medium,
+	// 					episodes: {
+	// 						create: data._embedded.episodes
+	// 							.filter((episode) => episode.season === season.number)
+	// 							.map((episode) => {
+	// 								return {
+	// 									show: data.name,
+	// 									name: episode.name,
+	// 									number: episode.number,
+	// 									image: episode.image.medium
+	// 								}
+	// 							})
+	// 					}
+	// 				}
+	// 			})
+	// 	}
+	// }
+
+	// await db.show.create({ data: show })
+
 	const show = {
 		name: data.name,
 		slug: data.name.toLowerCase().split(' ').join('-'),
 		image: data.image.medium,
-		updated: data.updated,
-		seasons: {
-			create: data._embedded.seasons
-				.filter((season) => Boolean(season.premiereDate))
-				.map((season) => {
-					return {
-						number: season.number,
-						image: season.image.medium,
-						episodes: {
-							create: data._embedded.episodes
-								.filter((episode) => episode.season === season.number)
-								.map((episode) => {
-									return {
-										show: data.name,
-										name: episode.name,
-										number: episode.number,
-										image: episode.image.medium
-									}
-								})
-						}
-					}
-				})
-		}
+		updated: data.updated
 	}
 
-	await db.show.create({ data: show })
+	const seasons = data._embedded.seasons
+		.filter((season) => Boolean(season.premiereDate))
+		.map((season) => ({
+			number: season.number,
+			image: season.image.medium
+		}))
+
+	const episodes = data._embedded.episodes.map((episode) => ({
+		season: episode.season,
+		name: episode.name,
+		number: episode.number,
+		image: episode.image.medium
+	}))
+
+	await db.show.create({
+		data: {
+			...show,
+			seasons: { create: seasons },
+			episodes: { create: episodes }
+		}
+	})
 }
 
 export async function getShows() {
@@ -98,9 +128,8 @@ export async function getEpisodes(name: string, season: number) {
 	const show = await db.show.findUnique({
 		where: { slug: name },
 		select: {
-			seasons: {
-				where: { number: season },
-				select: { episodes: true }
+			episodes: {
+				where: { season }
 			}
 		}
 	})
@@ -109,13 +138,13 @@ export async function getEpisodes(name: string, season: number) {
 		throw new Error('Could not find show.')
 	}
 
-	return show.seasons[0].episodes
+	return show.episodes
 }
 
 export async function completeShow(id: string) {
 	const show = await db.show.findUnique({
 		where: { id },
-		select: { name: true, completed: true }
+		select: { completed: true }
 	})
 
 	if (!show) {
@@ -124,24 +153,28 @@ export async function completeShow(id: string) {
 
 	await db.show.update({
 		where: { id },
-		data: { completed: !show.completed }
-	})
-
-	await db.season.updateMany({
-		where: { showId: id },
-		data: { completed: !show.completed }
-	})
-
-	await db.episode.updateMany({
-		where: { show: show.name },
-		data: { completed: !show.completed }
+		data: {
+			completed: !show.completed,
+			seasons: {
+				updateMany: {
+					where: { showId: id },
+					data: { completed: !show.completed }
+				}
+			},
+			episodes: {
+				updateMany: {
+					where: { showId: id },
+					data: { completed: !show.completed }
+				}
+			}
+		}
 	})
 }
 
 export async function completeSeason(id: string) {
 	const season = await db.season.findUnique({
 		where: { id },
-		select: { completed: true }
+		select: { number: true, completed: true }
 	})
 
 	if (!season) {
@@ -154,7 +187,7 @@ export async function completeSeason(id: string) {
 	})
 
 	await db.episode.updateMany({
-		where: { seasonId: id },
+		where: { season: season.number },
 		data: { completed: !season.completed }
 	})
 }
