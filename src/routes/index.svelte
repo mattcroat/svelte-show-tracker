@@ -41,13 +41,13 @@
 	/>
 {/if}
 
-<!-- {#if status === 'error'} -->
-<img
-	class="error"
-	src="https://i.giphy.com/media/146BUR1IHbM6zu/giphy.webp"
-	alt="Error"
-/>
-<!-- {/if} -->
+{#if status === 'error'}
+	<img
+		class="error"
+		src="https://i.giphy.com/media/146BUR1IHbM6zu/giphy.webp"
+		alt="Error"
+	/>
+{/if}
 
 {#if status === 'loaded'}
 	<div class="results">
@@ -83,6 +83,7 @@
 	h2 {
 		color: var(--teal-3);
 		font-size: var(--font-size-6);
+		padding-top: var(--size-7);
 		padding-bottom: var(--size-3);
 		text-align: center;
 	}
@@ -140,5 +141,13 @@
 
 	.result .title {
 		padding-top: var(--size-2);
+	}
+
+	.added {
+		opacity: 0.2;
+	}
+
+	.added button {
+		cursor: not-allowed;
 	}
 </style>

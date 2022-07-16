@@ -49,10 +49,46 @@ fieldset {
 	border: none;
 }
 
-.added {
-	opacity: 0.4;
+.grid .heading {
+	padding-top: var(--size-7);
+	padding-bottom: var(--size-2);
 }
 
-.added button {
-	cursor: not-allowed;
+.grid .items {
+	display: grid;
+	grid-template-columns: var(--grid);
+	gap: var(--size-7);
+}
+
+.grid .item {
+	position: relative;
+	box-shadow: var(--shadow-3);
+}
+
+.grid .item a {
+	transition: opacity 0.3s;
+}
+
+.grid .item form {
+	position: absolute;
+	left: var(--size-1);
+	bottom: var(--size-1);
+	font-size: var(--size-7);
+}
+
+.grid .item button {
+	background: none;
+	transition: transform 0.1s;
+}
+
+.grid .item button:active {
+	transform: scale(0.8);
+}
+
+.grid .item .completed {
+	opacity: 0.2;
+}
+
+.grid .item + .title {
+	padding-top: var(--size-2);
 }

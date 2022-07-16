@@ -8,59 +8,21 @@
 	const path = $page.url.pathname
 </script>
 
-<h1>{name}</h1>
+<div class="grid">
+	<h2 class="heading">{name}</h2>
 
-<!-- <pre>
- {JSON.stringify(seasons, null, 2)}
-</pre> -->
+	<section class="items">
+		{#each seasons as { id, number, image, completed }}
+			<article class="item">
+				<a href="{path}/seasons/{number}" class:completed>
+					<img src={image} alt={name} />
+				</a>
 
-<div class="seasons">
-	{#each seasons as { id, number, image, completed }}
-		<div class="season">
-			<a href="{path}/seasons/{number}" class:completed>
-				<img src={image} alt={name} />
-			</a>
-
-			<form method="post" use:enhanceForm>
-				<input type="hidden" name="id" value={id} />
-				<button aria-label="Mark as watched" type="submit">🍿</button>
-			</form>
-		</div>
-	{/each}
+				<form method="post" use:enhanceForm>
+					<input type="hidden" name="id" value={id} />
+					<button aria-label="Mark as watched" type="submit">🍿</button>
+				</form>
+			</article>
+		{/each}
+	</section>
 </div>
-
-<style>
-	.seasons {
-		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 210px));
-		gap: 2rem;
-	}
-
-	.season {
-		position: relative;
-	}
-
-	a {
-		transition: opacity 0.3s;
-	}
-
-	form {
-		position: absolute;
-		left: 0;
-		bottom: 8px;
-		font-size: 2rem;
-	}
-
-	button {
-		background: none;
-		transition: transform 0.1s;
-	}
-
-	button:active {
-		transform: scale(0.8);
-	}
-
-	.completed {
-		opacity: 0.4;
-	}
-</style>

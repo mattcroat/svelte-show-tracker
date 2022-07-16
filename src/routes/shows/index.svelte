@@ -4,59 +4,21 @@
 	export let shows: any[]
 </script>
 
-<h1>Shows</h1>
+<div class="grid">
+	<h2 class="heading">Shows</h2>
 
-<!-- <pre>
- {JSON.stringify(shows, null, 2)}
-</pre> -->
+	<section class="items">
+		{#each shows as { id, name, slug, image, completed }}
+			<article class="item">
+				<a href="/shows/{slug}" class:completed>
+					<img src={image} alt={name} />
+				</a>
 
-<div class="shows">
-	{#each shows as { id, name, slug, image, completed }}
-		<div class="show">
-			<a href="/shows/{slug}" class:completed>
-				<img src={image} alt={name} />
-			</a>
-
-			<form method="post" use:enhanceForm>
-				<input type="hidden" name="id" value={id} />
-				<button aria-label="Mark as watched" type="submit">🍿</button>
-			</form>
-		</div>
-	{/each}
+				<form method="post" use:enhanceForm>
+					<input type="hidden" name="id" value={id} />
+					<button aria-label="Mark as watched" type="submit">🍿</button>
+				</form>
+			</article>
+		{/each}
+	</section>
 </div>
-
-<style>
-	.shows {
-		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 210px));
-		gap: 2rem;
-	}
-
-	.show {
-		position: relative;
-	}
-
-	a {
-		transition: opacity 0.3s;
-	}
-
-	form {
-		position: absolute;
-		left: 0;
-		bottom: 8px;
-		font-size: 2rem;
-	}
-
-	button {
-		background: none;
-		transition: transform 0.1s;
-	}
-
-	button:active {
-		transform: scale(0.8);
-	}
-
-	.completed {
-		opacity: 0.4;
-	}
-</style>
