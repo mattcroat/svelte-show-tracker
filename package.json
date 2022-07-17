@@ -35,6 +35,7 @@
 	},
 	"dependencies": {
 		"@prisma/client": "^4.0.0",
-		"open-props": "^1.4.3"
+		"open-props": "^1.4.3",
+		"zod": "^3.17.3"
 	}
 }
