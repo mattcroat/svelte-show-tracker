@@ -1,4 +1,8 @@
+// todo: rename prisma.ts to index.ts
+import type { z } from 'zod'
+
 import { db } from '$lib/database/prisma'
+import { validateSearchResults } from '$lib/validation'
 
 const base = 'https://api.tvmaze.com'
 
@@ -20,10 +24,15 @@ async function api(url: string) {
 }
 
 export async function getSearchResults(name: string) {
-	const data = await api(`/search/shows?q=${name}`)
+	const searchResults: Show[] = await api(`/search/shows?q=${name}`)
 
+	// todo: catch error
+	const validatedResults = validateSearchResults(searchResults)
+	type Show = z.infer<typeof validatedResults>
+
+	// todo: I hate this syntax
 	return await Promise.all(
-		data.map(async ({ show }) => {
+		searchResults.map(async ({ show }) => {
 			return {
 				id: show.id,
 				name: show.name,
@@ -105,6 +114,7 @@ export async function addShowToDatabase(id: string) {
 }
 
 export async function getShows() {
+	// todo: only return what's required
 	return await db.show.findMany()
 }
 

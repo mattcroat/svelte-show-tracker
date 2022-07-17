@@ -1,7 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit'
 import { addShowToDatabase, getSearchResults } from '$lib/api'
+import type { SearchResult } from '$lib/types'
 
-let results = []
+let results: SearchResult[] = []
 
 export const get: RequestHandler = async () => {
 	return {
@@ -12,6 +13,7 @@ export const get: RequestHandler = async () => {
 export const post: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
 
+	// todo: put check instead of type conversion
 	const search = form.has('search')
 	const name = String(form.get('show'))
 

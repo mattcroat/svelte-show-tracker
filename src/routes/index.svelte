@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhanceForm } from '$lib/actions/form'
+	import type { SearchResult } from '$lib/types'
 
-	export let results = []
+	export let results: SearchResult[] = []
 
 	let status: 'loading' | 'loaded' | 'error'
 	let error: string
