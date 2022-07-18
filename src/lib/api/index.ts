@@ -1,7 +1,6 @@
-import type { z } from 'zod'
-
 import { db } from '$lib/database'
-import { validateSearchResults } from '$lib/validation'
+import { validateSearchResults, validateShow } from '$lib/validation'
+import type { z } from 'zod'
 
 const base = 'https://api.tvmaze.com'
 
@@ -44,43 +43,15 @@ export async function getSearchResults(name: string) {
 
 export async function addShowToDatabase(id: string) {
 	// https://api.tvmaze.com/shows/2993?embed[]=seasons&embed[]=episodes
-	const data = await api(`/shows/${id}?embed[]=seasons&embed[]=episodes`)
+	const data: Show = await api(`/shows/${id}?embed[]=seasons&embed[]=episodes`)
 	const added = Boolean(await db.show.count({ where: { name: data.name } }))
 
 	if (added) {
 		throw new Error(`${data.name} already exists.`)
 	}
 
-	// const show = {
-	// 	name: data.name,
-	// 	slug: data.name.toLowerCase().split(' ').join('-'),
-	// 	image: data.image.medium,
-	// 	updated: data.updated,
-	// 	seasons: {
-	// 		create: data._embedded.seasons
-	// 			.filter((season) => Boolean(season.premiereDate))
-	// 			.map((season) => {
-	// 				return {
-	// 					number: season.number,
-	// 					image: season.image.medium,
-	// 					episodes: {
-	// 						create: data._embedded.episodes
-	// 							.filter((episode) => episode.season === season.number)
-	// 							.map((episode) => {
-	// 								return {
-	// 									show: data.name,
-	// 									name: episode.name,
-	// 									number: episode.number,
-	// 									image: episode.image.medium
-	// 								}
-	// 							})
-	// 					}
-	// 				}
-	// 			})
-	// 	}
-	// }
-
-	// await db.show.create({ data: show })
+	const validatedShow = validateShow(data)
+	type Show = z.infer<typeof validatedShow>
 
 	const show = {
 		name: data.name,
