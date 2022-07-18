@@ -36,6 +36,7 @@
 	"dependencies": {
 		"@prisma/client": "^4.0.0",
 		"open-props": "^1.4.3",
+		"tiny-invariant": "^1.2.0",
 		"zod": "^3.17.3"
 	}
 }

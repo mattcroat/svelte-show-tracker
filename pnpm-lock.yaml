@@ -17,6 +17,7 @@ specifiers:
   svelte: ^3.49.0
   svelte-check: ^2.8.0
   svelte-preprocess: ^4.10.7
+  tiny-invariant: ^1.2.0
   tslib: ^2.4.0
   typescript: ^4.7.4
   vite: ^3.0.0
@@ -25,6 +26,7 @@ specifiers:
 dependencies:
   '@prisma/client': 4.0.0
   open-props: 1.4.3
+  tiny-invariant: 1.2.0
   zod: 3.17.3
 
 devDependencies:
@@ -1878,6 +1880,10 @@ packages:
       globalyzer: 0.1.0
       globrex: 0.1.2
     dev: true
+
+  /tiny-invariant/1.2.0:
+    resolution: {integrity: sha512-1Uhn/aqw5C6RI4KejVeTg6mIS7IqxnLJ8Mv2tV5rTc0qWobay7pDUz6Wi392Cnc8ak1H0F2cjoRzb2/AW4+Fvg==}
+    dev: false
 
   /to-regex-range/5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
