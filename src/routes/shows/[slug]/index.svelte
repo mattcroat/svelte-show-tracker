@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import { enhanceForm } from '$lib/actions/form'
+	import type { Season } from '@prisma/client'
 
 	export let name = 'Could not find name'
-	export let seasons: any[] = []
+	export let seasons: Season[] = []
 
 	const path = $page.url.pathname
 </script>
