@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant'
 import { db } from '$lib/database'
 import { validateSearchResults, validateShow } from '$lib/validation'
 import type { z } from 'zod'
@@ -46,9 +47,7 @@ export async function addShowToDatabase(id: string) {
 	const data: Show = await api(`/shows/${id}?embed[]=seasons&embed[]=episodes`)
 	const added = Boolean(await db.show.count({ where: { name: data.name } }))
 
-	if (added) {
-		throw new Error(`${data.name} already exists.`)
-	}
+	invariant(!added, `${data.name} already exists.`)
 
 	const validatedShow = validateShow(data)
 	type Show = z.infer<typeof validatedShow>
@@ -94,10 +93,7 @@ export async function getSeasons(slug: string) {
 		select: { name: true, seasons: true }
 	})
 
-	// todo: use invariant
-	if (!show) {
-		throw new Error('Could not find show.')
-	}
+	invariant(show, 'Could not find show.')
 
 	return {
 		name: show.name,
@@ -115,9 +111,7 @@ export async function getEpisodes(name: string, season: number) {
 		}
 	})
 
-	if (!show) {
-		throw new Error('Could not find show.')
-	}
+	invariant(show, 'Could not find show.')
 
 	return show.episodes
 }
@@ -128,9 +122,7 @@ export async function completeShow(id: string) {
 		select: { completed: true }
 	})
 
-	if (!show) {
-		throw new Error('Could not find show.')
-	}
+	invariant(show, 'Could not find show.')
 
 	await db.show.update({
 		where: { id },
@@ -158,9 +150,7 @@ export async function completeSeason(id: string) {
 		select: { number: true, completed: true }
 	})
 
-	if (!season) {
-		throw new Error('Could not find season.')
-	}
+	invariant(season, 'Could not find season.')
 
 	await db.season.update({
 		where: { id },
@@ -179,9 +169,7 @@ export async function completeEpisode(id: string) {
 		select: { completed: true }
 	})
 
-	if (!episode) {
-		throw new Error('Could not find episode.')
-	}
+	invariant(episode, 'Could not find episode.')
 
 	await db.episode.update({
 		where: { id },
