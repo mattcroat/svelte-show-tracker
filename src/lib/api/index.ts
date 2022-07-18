@@ -1,7 +1,6 @@
-// todo: rename prisma.ts to index.ts
 import type { z } from 'zod'
 
-import { db } from '$lib/database/prisma'
+import { db } from '$lib/database'
 import { validateSearchResults } from '$lib/validation'
 
 const base = 'https://api.tvmaze.com'
@@ -124,6 +123,7 @@ export async function getSeasons(slug: string) {
 		select: { name: true, seasons: true }
 	})
 
+	// todo: use invariant
 	if (!show) {
 		throw new Error('Could not find show.')
 	}
