@@ -20,7 +20,9 @@
 		},
 		error: async ({ response }) => {
 			status = 'error'
-			error = (await response?.json()).message
+			if (response) {
+				error = (await response.json()).message
+			}
 		},
 		result: ({ form }) => {
 			status = 'loaded'
@@ -48,6 +50,7 @@
 		src="https://i.giphy.com/media/146BUR1IHbM6zu/giphy.webp"
 		alt="Error"
 	/>
+	<p>{error}</p>
 {/if}
 
 {#if status === 'loaded'}
@@ -59,8 +62,10 @@
 				class:added
 				use:enhanceForm={{
 					error: async ({ response }) => {
-						const { message } = await response?.json()
-						alert(message)
+						if (response) {
+							error = (await response.json()).message
+							alert(error)
+						}
 					},
 					result: () => {
 						alert('Show added!')
