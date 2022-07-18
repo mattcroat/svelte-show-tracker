@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhanceForm } from '$lib/actions/form'
+	import type { Show } from '@prisma/client'
 
-	export let shows: any[]
+	export let shows: Show[] = []
 </script>
 
 <div class="grid">
