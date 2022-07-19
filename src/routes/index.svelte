@@ -116,9 +116,9 @@
 	}
 
 	.search input {
-		padding: var(--size-4) var(--size-8);
+		padding: var(--size-4) var(--size-3);
 		color: var(--gray-4);
-		font-size: var(--font-size-4);
+		font-size: var(--font-size-2);
 		background: var(--gray-8);
 		border-radius: var(--radius-3) 0 0 var(--radius-3);
 		border: none;
@@ -130,7 +130,7 @@
 	}
 
 	.search button {
-		padding: 0 var(--size-3);
+		padding: 0 var(--size-2);
 		color: var(--gray-0);
 		background: var(--gray-8);
 		border-radius: 0 var(--radius-3) var(--radius-3) 0;
@@ -174,5 +174,16 @@
 
 	.added button {
 		cursor: not-allowed;
+	}
+
+	@media (min-width: 480px) {
+		.search input {
+			padding: var(--size-4) var(--size-8);
+			font-size: var(--font-size-4);
+		}
+
+		.search button {
+			padding: 0 var(--size-3);
+		}
 	}
 </style>
