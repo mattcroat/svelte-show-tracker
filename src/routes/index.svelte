@@ -5,7 +5,6 @@
 	export let results: SearchResult[] = []
 
 	let status: 'loading' | 'loaded' | 'error'
-	let error: string
 </script>
 
 <h2>Search</h2>
@@ -18,15 +17,12 @@
 		pending: () => {
 			status = 'loading'
 		},
-		error: async ({ response }) => {
+		error: async () => {
 			status = 'error'
-			if (response) {
-				error = (await response.json()).message
-			}
+			alert('Something went wrong. 💩')
 		},
 		result: ({ form }) => {
 			status = 'loaded'
-			error = ''
 			form.reset()
 		}
 	}}
@@ -50,7 +46,6 @@
 		src="https://i.giphy.com/media/146BUR1IHbM6zu/giphy.webp"
 		alt="Error"
 	/>
-	<p>{error}</p>
 {/if}
 
 {#if status === 'loaded'}
@@ -61,11 +56,9 @@
 				class="result"
 				class:added
 				use:enhanceForm={{
-					error: async ({ response }) => {
-						if (response) {
-							error = (await response.json()).message
-							alert(error)
-						}
+					error: async () => {
+						status = 'error'
+						alert('Could not add show. 💩')
 					},
 					result: () => {
 						alert('Show added!')
