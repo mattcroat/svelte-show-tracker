@@ -88,6 +88,7 @@ export async function addShowToDatabase(id: string) {
 export async function getShows() {
 	return await db.show.findMany({
 		select: {
+			id: true,
 			name: true,
 			slug: true,
 			image: true,
