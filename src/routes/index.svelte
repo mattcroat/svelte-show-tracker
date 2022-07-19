@@ -7,7 +7,7 @@
 	let status: 'loading' | 'loaded' | 'error'
 </script>
 
-<h2>Search</h2>
+<h2>Add Show</h2>
 
 <form
 	method="post"
@@ -28,8 +28,24 @@
 	}}
 >
 	<input type="hidden" name="search" />
-	<input type="text" name="show" placeholder="Search for a show..." />
-	<button type="submit">Submit</button>
+	<input type="search" name="show" placeholder="Search" />
+	<button aria-label="Search for a show" type="submit">
+		<svg
+			width="24"
+			height="24"
+			xmlns="http://www.w3.org/2000/svg"
+			fill="none"
+			viewBox="0 0 24 24"
+			stroke="currentColor"
+			stroke-width="2"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+			/>
+		</svg>
+	</button>
 </form>
 
 {#if status === 'loading'}
@@ -88,10 +104,15 @@
 	}
 
 	.search {
-		position: relative;
+		display: flex;
 		width: max-content;
 		margin: 0 auto;
 		box-shadow: var(--shadow-1);
+	}
+
+	.search:focus-within {
+		outline: 3px solid var(--teal-3);
+		border-radius: var(--radius-3);
 	}
 
 	.search input {
@@ -99,8 +120,9 @@
 		color: var(--gray-4);
 		font-size: var(--font-size-4);
 		background: var(--gray-8);
-		border-radius: var(--radius-3);
+		border-radius: var(--radius-3) 0 0 var(--radius-3);
 		border: none;
+		outline: none;
 	}
 
 	.search input::placeholder {
@@ -108,13 +130,14 @@
 	}
 
 	.search button {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		padding: 0 var(--size-6);
+		padding: 0 var(--size-3);
 		color: var(--gray-0);
-		background: none;
+		background: var(--gray-8);
+		border-radius: 0 var(--radius-3) var(--radius-3) 0;
+	}
+
+	.search button svg {
+		color: var(--gray-4);
 	}
 
 	.loading,
