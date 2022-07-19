@@ -52,13 +52,13 @@ fieldset {
 
 .grid .heading {
 	padding-top: var(--size-7);
-	padding-bottom: var(--size-2);
 }
 
 .grid .items {
 	display: grid;
 	grid-template-columns: var(--grid-shows);
 	gap: var(--size-7);
+	padding: var(--size-3) 0 var(--size-7) 0;
 }
 
 .grid .item {
