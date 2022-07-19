@@ -5,9 +5,11 @@ export function validateSearchResults(searchResults: unknown) {
 		show: z.object({
 			id: z.number(),
 			name: z.string(),
-			image: z.object({
-				medium: z.string()
-			})
+			image: z
+				.object({
+					medium: z.string()
+				})
+				.or(z.null())
 		})
 	})
 	z.array(showSchema).parse(searchResults)
