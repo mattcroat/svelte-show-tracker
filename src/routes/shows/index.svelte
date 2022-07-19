@@ -11,8 +11,8 @@
 	<section class="items">
 		{#each shows as { id, name, slug, image, completed }}
 			<article class="item">
-				<a href="/shows/{slug}" class:completed>
-					<img class="show" src={image} alt={name} />
+				<a href="/shows/{slug}">
+					<img class="show" class:completed src={image} alt={name} />
 				</a>
 
 				<form method="post" use:enhanceForm>

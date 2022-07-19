@@ -14,14 +14,12 @@
 
 			<div>
 				<article class="item">
-					<div class:completed>
-						<img class="episode" src={image} alt={name} />
+					<img class="episode" class:completed src={image} alt={name} />
 
-						<form method="post" use:enhanceForm>
-							<input type="hidden" name="id" value={id} />
-							<button aria-label="Mark as watched" type="submit">🍿</button>
-						</form>
-					</div>
+					<form method="post" use:enhanceForm>
+						<input type="hidden" name="id" value={id} />
+						<button aria-label="Mark as watched" type="submit">🍿</button>
+					</form>
 				</article>
 
 				<p class="title">{episodeNumber} {name}</p>
