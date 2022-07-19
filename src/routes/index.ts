@@ -5,13 +5,13 @@ import type { SearchResult } from '$lib/types'
 
 let results: SearchResult[] = []
 
-export const get: RequestHandler = async () => {
+export const GET: RequestHandler = async () => {
 	return {
 		body: { results }
 	}
 }
 
-export const post: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
 
 	if (form.has('search')) {

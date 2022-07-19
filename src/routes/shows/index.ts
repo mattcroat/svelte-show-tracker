@@ -2,13 +2,13 @@ import invariant from 'tiny-invariant'
 import { completeShow, getShows } from '$lib/api'
 import type { RequestHandler } from '@sveltejs/kit'
 
-export const get: RequestHandler = async () => {
+export const GET: RequestHandler = async () => {
 	return {
 		body: { shows: await getShows() }
 	}
 }
 
-export const post: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
 	const id = form.get('id')
 

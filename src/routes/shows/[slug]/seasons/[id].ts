@@ -2,7 +2,7 @@ import { completeEpisode, getEpisodes } from '$lib/api'
 import invariant from 'tiny-invariant'
 import type { RequestHandler } from '@sveltejs/kit'
 
-export const get: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params }) => {
 	const name = params.slug
 	const season = +params.id
 
@@ -13,7 +13,7 @@ export const get: RequestHandler = async ({ params }) => {
 	}
 }
 
-export const post: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
 	const id = form.get('id')
 
