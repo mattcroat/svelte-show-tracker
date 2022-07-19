@@ -22,6 +22,11 @@ async function api(url: string) {
 	}
 }
 
+const placeholder = {
+	show: 'https://via.placeholder.com/210x295?text=Placeholder',
+	episode: 'https://via.placeholder.com/250x140?text=Placeholder'
+}
+
 export async function getSearchResults(name: string) {
 	const searchResults: Show[] = await api(`/search/shows?q=${name}`)
 
@@ -33,7 +38,7 @@ export async function getSearchResults(name: string) {
 			return {
 				id: show.id,
 				name: show.name,
-				image: show.image.medium,
+				image: show.image?.medium ?? placeholder.show,
 				added: Boolean(await db.show.findFirst({ where: { name: show.name } }))
 			}
 		})
@@ -53,9 +58,7 @@ export async function addShowToDatabase(id: string) {
 	const show = {
 		name: data.name,
 		slug: data.name.toLowerCase().split(' ').join('-'),
-		image:
-			data.image?.medium ??
-			`https://via.placeholder.com/210x295?text=${data.name}`,
+		image: data.image?.medium ?? placeholder.show,
 		updated: data.updated
 	}
 
@@ -63,18 +66,14 @@ export async function addShowToDatabase(id: string) {
 		.filter((season) => Boolean(season.premiereDate))
 		.map((season) => ({
 			number: season.number,
-			image:
-				season.image?.medium ??
-				`https://via.placeholder.com/210x295?text=${data.name}`
+			image: season.image?.medium ?? placeholder.show
 		}))
 
 	const episodes = data._embedded.episodes.map((episode) => ({
 		season: episode.season,
 		name: episode.name,
 		number: episode.number,
-		image:
-			episode.image?.medium ??
-			`https://via.placeholder.com/250x140?text=${data.name}`
+		image: episode.image?.medium ?? placeholder.episode
 	}))
 
 	await db.show.create({
