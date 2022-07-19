@@ -15,7 +15,7 @@
 			<div>
 				<article class="item">
 					<div class:completed>
-						<img src={image} alt={name} />
+						<img class="episode" src={image} alt={name} />
 
 						<form method="post" use:enhanceForm>
 							<input type="hidden" name="id" value={id} />
@@ -29,3 +29,9 @@
 		{/each}
 	</section>
 </div>
+
+<style>
+	.items {
+		grid-template-columns: var(--grid-episodes);
+	}
+</style>

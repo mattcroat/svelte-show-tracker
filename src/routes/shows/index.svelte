@@ -12,7 +12,7 @@
 		{#each shows as { id, name, slug, image, completed }}
 			<article class="item">
 				<a href="/shows/{slug}" class:completed>
-					<img src={image} alt={name} />
+					<img class="show" src={image} alt={name} />
 				</a>
 
 				<form method="post" use:enhanceForm>

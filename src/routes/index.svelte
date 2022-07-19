@@ -135,6 +135,9 @@
 	}
 
 	.result img {
+		width: 210px;
+		height: 295px;
+		object-fit: cover;
 		box-shadow: var(--shadow-3);
 	}
 

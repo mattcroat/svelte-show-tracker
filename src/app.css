@@ -7,7 +7,8 @@
 }
 
 :root {
-	--grid: repeat(auto-fill, 210px);
+	--grid-shows: repeat(auto-fill, 210px);
+	--grid-episodes: repeat(auto-fill, 250px);
 }
 
 html {
@@ -56,7 +57,7 @@ fieldset {
 
 .grid .items {
 	display: grid;
-	grid-template-columns: var(--grid);
+	grid-template-columns: var(--grid-shows);
 	gap: var(--size-7);
 }
 
@@ -67,6 +68,19 @@ fieldset {
 
 .grid .item a {
 	transition: opacity 0.3s;
+}
+
+.grid img.show,
+.grid img.season {
+	width: 210px;
+	height: 295px;
+	object-fit: cover;
+}
+
+.grid img.episode {
+	width: 250px;
+	height: 140px;
+	object-fit: cover;
 }
 
 .grid .item form {

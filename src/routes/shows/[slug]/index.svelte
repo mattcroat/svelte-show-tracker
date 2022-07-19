@@ -16,7 +16,7 @@
 		{#each seasons as { id, number, image, completed }}
 			<article class="item">
 				<a href="{path}/seasons/{number}" class:completed>
-					<img src={image} alt={name} />
+					<img class="season" src={image} alt={name} />
 				</a>
 
 				<form method="post" use:enhanceForm>
