@@ -128,7 +128,7 @@
 
 	.results {
 		display: grid;
-		grid-template-columns: var(--grid);
+		grid-template-columns: var(--grid-shows);
 		place-content: center;
 		gap: var(--size-7);
 		padding: var(--size-7) 0;
