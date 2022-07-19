@@ -25,11 +25,9 @@ async function api(url: string) {
 export async function getSearchResults(name: string) {
 	const searchResults: Show[] = await api(`/search/shows?q=${name}`)
 
-	// todo: catch error
 	const validatedResults = validateSearchResults(searchResults)
 	type Show = z.infer<typeof validatedResults>
 
-	// todo: I hate this syntax
 	return await Promise.all(
 		searchResults.map(async ({ show }) => {
 			return {
@@ -55,7 +53,9 @@ export async function addShowToDatabase(id: string) {
 	const show = {
 		name: data.name,
 		slug: data.name.toLowerCase().split(' ').join('-'),
-		image: data.image.medium,
+		image:
+			data.image?.medium ??
+			`https://via.placeholder.com/210x295?text=${data.name}`,
 		updated: data.updated
 	}
 
@@ -63,14 +63,18 @@ export async function addShowToDatabase(id: string) {
 		.filter((season) => Boolean(season.premiereDate))
 		.map((season) => ({
 			number: season.number,
-			image: season.image.medium
+			image:
+				season.image?.medium ??
+				`https://via.placeholder.com/210x295?text=${data.name}`
 		}))
 
 	const episodes = data._embedded.episodes.map((episode) => ({
 		season: episode.season,
 		name: episode.name,
 		number: episode.number,
-		image: episode.image.medium
+		image:
+			episode.image?.medium ??
+			`https://via.placeholder.com/250x140?text=${data.name}`
 	}))
 
 	await db.show.create({
@@ -83,8 +87,15 @@ export async function addShowToDatabase(id: string) {
 }
 
 export async function getShows() {
-	// todo: only return what's required
-	return await db.show.findMany()
+	return await db.show.findMany({
+		select: {
+			name: true,
+			slug: true,
+			image: true,
+			completed: true,
+			updated: true
+		}
+	})
 }
 
 export async function getSeasons(slug: string) {
