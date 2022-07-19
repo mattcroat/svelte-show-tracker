@@ -1,5 +1,6 @@
-import type { RequestHandler } from '@sveltejs/kit'
+import invariant from 'tiny-invariant'
 import { addShowToDatabase, getSearchResults } from '$lib/api'
+import type { RequestHandler } from '@sveltejs/kit'
 import type { SearchResult } from '$lib/types'
 
 let results: SearchResult[] = []
@@ -13,18 +14,15 @@ export const get: RequestHandler = async () => {
 export const post: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
 
-	// todo: put check instead of type conversion
-	const search = form.has('search')
-	const name = String(form.get('show'))
-
-	const add = form.has('add')
-	const id = String(form.get('id'))
-
-	if (search) {
+	if (form.has('search')) {
+		const name = form.get('show')
+		invariant(typeof name === 'string', 'name must be a string')
 		results = await getSearchResults(name)
 	}
 
-	if (add) {
+	if (form.has('add')) {
+		const id = form.get('id')
+		invariant(typeof id === 'string', 'id must be a string')
 		await addShowToDatabase(id)
 	}
 
