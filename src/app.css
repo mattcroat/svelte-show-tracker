@@ -40,7 +40,7 @@ a:hover {
 img {
 	width: 100%;
 	display: block;
-	border-radius: 8px;
+	border: 1px solid var(--gray-9);
 	border-radius: var(--radius-3);
 }
 
@@ -68,6 +68,7 @@ fieldset {
 
 .grid .item {
 	position: relative;
+	border-radius: var(--radius-3);
 	box-shadow: var(--shadow-3);
 }
 
