@@ -76,11 +76,16 @@ export async function addShowToDatabase(id: string) {
 		image: episode.image?.medium ?? placeholder.episode
 	}))
 
+	const stats = {
+		episodes: data._embedded.episodes.length
+	}
+
 	await db.show.create({
 		data: {
 			...show,
 			seasons: { create: seasons },
-			episodes: { create: episodes }
+			episodes: { create: episodes },
+			stats: { create: stats }
 		}
 	})
 }
@@ -153,12 +158,14 @@ export async function completeShow(id: string) {
 			}
 		}
 	})
+
+	updateStats(id)
 }
 
 export async function completeSeason(id: string) {
 	const season = await db.season.findUnique({
 		where: { id },
-		select: { number: true, completed: true }
+		select: { number: true, completed: true, showId: true }
 	})
 
 	invariant(season, 'Could not find season.')
@@ -172,12 +179,14 @@ export async function completeSeason(id: string) {
 		where: { season: season.number },
 		data: { completed: !season.completed }
 	})
+
+	updateStats(season.showId)
 }
 
 export async function completeEpisode(id: string) {
 	const episode = await db.episode.findUnique({
 		where: { id },
-		select: { completed: true }
+		select: { completed: true, showId: true }
 	})
 
 	invariant(episode, 'Could not find episode.')
@@ -185,5 +194,21 @@ export async function completeEpisode(id: string) {
 	await db.episode.update({
 		where: { id },
 		data: { completed: !episode.completed }
+	})
+
+	updateStats(episode.showId)
+}
+
+async function updateStats(showId: string) {
+	const count = await db.episode.count({
+		where: {
+			showId,
+			completed: { equals: true }
+		}
+	})
+
+	await db.stats.update({
+		where: { showId },
+		data: { watched: count }
 	})
 }

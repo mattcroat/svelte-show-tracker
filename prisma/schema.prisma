@@ -18,6 +18,7 @@ model Show {
 
   seasons  Season[]
   episodes Episode[]
+  stats    Stats?
 }
 
 model Season {
@@ -42,4 +43,13 @@ model Episode {
 
   show   Show   @relation(fields: [showId], references: [id])
   showId String
+}
+
+model Stats {
+  id       String @id @default(cuid())
+  watched  Int    @default(0)
+  episodes Int
+
+  show   Show   @relation(fields: [showId], references: [id])
+  showId String @unique
 }
