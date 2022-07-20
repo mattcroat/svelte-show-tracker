@@ -8,6 +8,10 @@
 <div class="grid">
 	<h2 class="heading">Shows</h2>
 
+	{#if shows.length === 0}
+		<p>Nothing to show here.</p>
+	{/if}
+
 	<section class="items">
 		{#each shows as { id, name, slug, image, completed }}
 			<article class="item">
