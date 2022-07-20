@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { enhanceForm } from '$lib/actions/form'
-	import type { Show } from '@prisma/client'
+	import { completion } from '$lib/utils'
+	import type { ShowsWithStats } from '$lib/types'
 
-	export let shows: Show[] = []
+	export let shows: ShowsWithStats = []
 </script>
 
 <div class="grid">
@@ -13,11 +14,17 @@
 	{/if}
 
 	<section class="items">
-		{#each shows as { id, name, slug, image, completed }}
+		{#each shows as { id, name, slug, image, completed, stats }}
 			<article class="item">
 				<a href="/shows/{slug}">
 					<img class="show" class:completed src={image} alt={name} />
 				</a>
+
+				<div class="stats">
+					<span class="completion">
+						{completion(stats.episodes, stats.watched)}
+					</span>
+				</div>
 
 				<form method="post" use:enhanceForm>
 					<input type="hidden" name="id" value={id} />

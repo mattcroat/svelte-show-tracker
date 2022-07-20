@@ -94,14 +94,7 @@ export async function addShowToDatabase(showId: string) {
 
 export async function getShows() {
 	return await db.show.findMany({
-		select: {
-			id: true,
-			name: true,
-			slug: true,
-			image: true,
-			completed: true,
-			updated: true
-		}
+		include: { stats: true }
 	})
 }
 

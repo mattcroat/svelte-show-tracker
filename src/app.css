@@ -71,6 +71,22 @@ fieldset {
 	box-shadow: var(--shadow-3);
 }
 
+.grid .item::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(transparent, hsl(0 0% 0%));
+	opacity: 0.8;
+	border-radius: 8px;
+	border-radius: var(--radius-3);
+	pointer-events: none;
+	z-index: var(--layer-1);
+}
+
+.grid .item > * {
+	z-index: var(--layer-2);
+}
+
 .grid .item a {
 	display: block;
 	transition: opacity 0.3s;
@@ -87,6 +103,21 @@ fieldset {
 	width: 250px;
 	height: 140px;
 	object-fit: cover;
+}
+
+.grid .item .stats {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: var(--font-size-7);
+	font-weight: var(--font-weight-7);
+	font-style: italic;
+	pointer-events: none;
+}
+
+.grid .item .stats .completion {
+	text-shadow: 0 2px 2px var(--gray-9);
 }
 
 .grid .item form {
