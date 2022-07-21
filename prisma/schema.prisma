@@ -8,8 +8,7 @@ datasource db {
 }
 
 model Show {
-  id String @id @default(cuid())
-
+  id        String  @id @default(cuid())
   name      String
   slug      String  @unique
   image     String
@@ -22,8 +21,7 @@ model Show {
 }
 
 model Season {
-  id String @id @default(cuid())
-
+  id        String  @id @default(cuid())
   number    Int
   image     String
   completed Boolean @default(false)
@@ -33,8 +31,7 @@ model Season {
 }
 
 model Episode {
-  id String @id @default(cuid())
-
+  id        String  @id @default(cuid())
   name      String
   season    Int
   number    Int
