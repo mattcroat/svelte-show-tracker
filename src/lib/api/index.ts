@@ -215,9 +215,13 @@ async function updateStats(showId: string) {
 		}
 	})
 
-	await db.stats.update({
-		where: { showId },
-		data: { watched: count }
+	await db.show.update({
+		where: { id: showId },
+		data: {
+			stats: {
+				update: { watched: count }
+			}
+		}
 	})
 }
 
