@@ -1,25 +1,22 @@
-import { completeEpisode, getEpisodes } from '$lib/api'
+import { episodeCompleted, getEpisodes } from '$lib/api'
 import invariant from 'tiny-invariant'
 import type { RequestHandler } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ params }) => {
-	const name = params.slug
-	const season = +params.id
-
 	return {
 		body: {
-			episodes: await getEpisodes(name, season)
+			episodes: await getEpisodes(params.slug)
 		}
 	}
 }
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, params }) => {
 	const form = await request.formData()
 	const id = form.get('id')
 
 	invariant(typeof id === 'string', 'id must be a string')
 
-	await completeEpisode(id)
+	await episodeCompleted(id, params.slug)
 
 	return {}
 }

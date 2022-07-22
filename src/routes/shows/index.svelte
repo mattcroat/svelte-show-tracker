@@ -14,7 +14,7 @@
 	{/if}
 
 	<section class="items">
-		{#each shows as { id, name, slug, image, completed, stats }}
+		{#each shows as { name, slug, image, completed, stats }}
 			<article class="item">
 				<a href="/shows/{slug}">
 					<img class="show" class:completed src={image} alt={name} />
@@ -27,7 +27,7 @@
 				</div>
 
 				<form method="post" use:enhanceForm>
-					<input type="hidden" name="id" value={id} />
+					<input type="hidden" name="slug" value={slug} />
 					<button aria-label="Mark as watched" type="submit">🍿</button>
 				</form>
 			</article>

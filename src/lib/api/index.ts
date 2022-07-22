@@ -57,9 +57,11 @@ export async function addShowToDatabase(showId: string) {
 	const validatedShow = validateShow(data)
 	type Show = z.infer<typeof validatedShow>
 
+	const slug = data.name.toLowerCase().split(' ').join('-')
+
 	const show = {
+		slug,
 		name: data.name,
-		slug: data.name.toLowerCase().split(' ').join('-'),
 		image: data.image?.medium ?? placeholder.show,
 		updated: data.updated
 	}
@@ -68,14 +70,25 @@ export async function addShowToDatabase(showId: string) {
 		.filter((season) => Boolean(season.premiereDate))
 		.map((season) => ({
 			number: season.number,
-			image: season.image?.medium ?? placeholder.show
+			image: season.image?.medium ?? placeholder.show,
+			episodeCount: season?.episodeOrder ?? 0
 		}))
 
 	const episodes = data._embedded.episodes.map((episode) => ({
-		season: episode.season,
+		slug,
 		name: episode.name,
+		seasonNumber: episode.season,
 		number: episode.number,
 		image: episode.image?.medium ?? placeholder.episode
+	}))
+
+	const seasonsWithEpisodes = seasons.map((season) => ({
+		...season,
+		episodes: {
+			create: episodes.filter(
+				(episode) => episode.seasonNumber === season.number
+			)
+		}
 	}))
 
 	const stats = {
@@ -85,8 +98,7 @@ export async function addShowToDatabase(showId: string) {
 	await db.show.create({
 		data: {
 			...show,
-			seasons: { create: seasons },
-			episodes: { create: episodes },
+			seasons: { create: seasonsWithEpisodes },
 			stats: { create: stats }
 		}
 	})
@@ -112,111 +124,88 @@ export async function getSeasons(slug: string) {
 	}
 }
 
-export async function getEpisodes(slug: string, season: number) {
+export async function getEpisodes(slug: string) {
+	const episodes = await db.episode.findMany({ where: { slug } })
+	return episodes
+}
+
+async function isShowCompleted(slug: string) {
 	const show = await db.show.findUnique({
 		where: { slug },
-		select: {
-			episodes: {
-				where: { season }
-			}
-		}
-	})
-
-	invariant(show, 'Could not find show.')
-
-	return show.episodes
-}
-
-export async function completeShow(showId: string) {
-	const show = await db.show.findUnique({
-		where: { id: showId },
 		select: { completed: true }
 	})
-
 	invariant(show, 'Could not find show.')
-
-	await db.show.update({
-		where: { id: showId },
-		data: {
-			completed: !show.completed,
-			seasons: {
-				updateMany: {
-					where: { showId },
-					data: { completed: !show.completed }
-				}
-			},
-			episodes: {
-				updateMany: {
-					where: { showId },
-					data: { completed: !show.completed }
-				}
-			}
-		}
-	})
-
-	await updateStats(showId)
+	return show.completed
 }
 
-export async function completeSeason(seasonId: string, seasonNumber: number) {
+export async function showCompleted(slug: string) {
+	const completed = await isShowCompleted(slug)
+
+	const query = {
+		where: { slug },
+		data: { completed: !completed }
+	}
+
+	await db.show.updateMany(query)
+	await db.episode.updateMany(query)
+	await updateStats(slug)
+}
+
+async function isSeasonCompleted(seasonId: string) {
 	const season = await db.season.findUnique({
 		where: { id: seasonId },
-		select: { showId: true, completed: true }
+		select: { slug: true, completed: true }
 	})
-
 	invariant(season, 'Could not find season.')
+	return season.completed
+}
+
+export async function seasonCompleted(seasonId: string, slug: string) {
+	const completed = await isSeasonCompleted(seasonId)
 
 	await db.season.update({
 		where: { id: seasonId },
-		data: { completed: !season.completed }
+		data: { completed: !completed }
 	})
 
 	await db.episode.updateMany({
-		where: { showId: season.showId, season: seasonNumber },
-		data: {
-			completed: !season.completed
-		}
+		where: { slug },
+		data: { completed: !completed }
 	})
 
-	// const numberOfSeasons = await db.season.count({
-	// 	where: { showId: season.showId }
-	// })
-	// const completedSeasons = await db.season.count({
-	// 	where: { showId: season.showId, completed: true }
-	// })
-	// await db.show.update({
-	// 	where: { id: season.showId },
-	// 	data: { completed: numberOfSeasons === completedSeasons }
-	// })
-
-	await updateStats(season.showId)
+	await updateStats(slug)
 }
 
-export async function completeEpisode(episodeId: string) {
+async function isEpisodeCompleted(episodeId: string) {
 	const episode = await db.episode.findUnique({
 		where: { id: episodeId },
-		select: { completed: true, showId: true }
+		select: { completed: true }
 	})
-
 	invariant(episode, 'Could not find episode.')
+	return episode.completed
+}
+
+export async function episodeCompleted(episodeId: string, slug: string) {
+	const completed = await isEpisodeCompleted(episodeId)
 
 	await db.episode.update({
 		where: { id: episodeId },
-		data: { completed: !episode.completed }
+		data: { completed: !completed }
 	})
 
-	await updateStats(episode.showId)
+	await updateStats(slug)
 }
 
-async function updateStats(showId: string) {
+async function updateStats(slug: string) {
 	const count = await db.episode.count({
 		where: {
-			showId,
+			slug,
 			completed: { equals: true }
 		}
 	})
 
 	await db.show.update({
-		where: { id: showId },
+		where: { slug },
 		data: {
 			stats: {
 				update: { watched: count }
@@ -227,6 +216,6 @@ async function updateStats(showId: string) {
 
 export async function getStats(showId: string) {
 	return await db.stats.findUnique({
-		where: { showId }
+		where: { id: showId }
 	})
 }

@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant'
-import { completeShow, getShows } from '$lib/api'
+import { getShows, showCompleted } from '$lib/api'
 import type { RequestHandler } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async () => {
@@ -10,11 +10,11 @@ export const GET: RequestHandler = async () => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
-	const id = form.get('id')
+	const slug = form.get('slug')
 
-	invariant(typeof id === 'string', 'id must be a string')
+	invariant(typeof slug === 'string', 'slug must be a string')
 
-	await completeShow(id)
+	await showCompleted(slug)
 
 	return {}
 }

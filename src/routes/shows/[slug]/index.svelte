@@ -21,7 +21,6 @@
 
 				<form method="post" use:enhanceForm>
 					<input type="hidden" name="season_id" value={id} />
-					<input type="hidden" name="season" value={number} />
 					<button aria-label="Mark as watched" type="submit">🍿</button>
 				</form>
 			</article>

@@ -34,6 +34,7 @@ export function validateShow(show: unknown) {
 							medium: z.string()
 						})
 						.or(z.null()),
+					episodeOrder: z.number().or(z.null()),
 					premiereDate: z.string().or(z.null())
 				})
 			),

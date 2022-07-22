@@ -15,33 +15,35 @@ model Show {
   completed Boolean @default(false)
   updated   Int
 
-  seasons  Season[]
-  episodes Episode[]
-
-  stats   Stats  @relation(fields: [statsId], references: [id])
-  statsId String @unique
+  seasons Season[]
+  stats   Stats    @relation(fields: [statsId], references: [id])
+  statsId String   @unique
 }
 
 model Season {
-  id        String  @id @default(cuid())
-  number    Int
-  image     String
-  completed Boolean @default(false)
+  id           String  @id @default(cuid())
+  number       Int
+  image        String
+  episodeCount Int
+  completed    Boolean @default(false)
 
-  show   Show   @relation(fields: [showId], references: [id])
-  showId String
+  show Show   @relation(fields: [slug], references: [slug])
+  slug String
+
+  episodes Episode[]
 }
 
 model Episode {
-  id        String  @id @default(cuid())
-  name      String
-  season    Int
-  number    Int
-  image     String
-  completed Boolean @default(false)
+  id           String  @id @default(cuid())
+  slug         String
+  name         String
+  seasonNumber Int
+  number       Int
+  image        String
+  completed    Boolean @default(false)
 
-  show   Show   @relation(fields: [showId], references: [id])
-  showId String
+  season   Season @relation(fields: [seasonId], references: [id])
+  seasonId String
 }
 
 model Stats {
