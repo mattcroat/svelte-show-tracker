@@ -10,13 +10,13 @@ export const GET: RequestHandler = async ({ params }) => {
 	}
 }
 
-export const POST: RequestHandler = async ({ request, params }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const form = await request.formData()
 	const id = form.get('id')
 
 	invariant(typeof id === 'string', 'id must be a string')
 
-	await episodeCompleted(id, params.slug)
+	await episodeCompleted(id)
 
 	return {}
 }

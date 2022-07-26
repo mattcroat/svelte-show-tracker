@@ -63,7 +63,8 @@ export async function addShowToDatabase(showId: string) {
 		slug,
 		name: data.name,
 		image: data.image?.medium ?? placeholder.show,
-		updated: data.updated
+		updated: data.updated,
+		totalEpisodes: data._embedded.episodes.length
 	}
 
 	const seasons = data._embedded.seasons
@@ -71,7 +72,8 @@ export async function addShowToDatabase(showId: string) {
 		.map((season) => ({
 			number: season.number,
 			image: season.image?.medium ?? placeholder.show,
-			episodeCount: season?.episodeOrder ?? 0
+			// todo: should probably filter episodes without total episodes
+			totalEpisodes: season.episodeOrder ?? 0
 		}))
 
 	const episodes = data._embedded.episodes.map((episode) => ({
@@ -91,23 +93,16 @@ export async function addShowToDatabase(showId: string) {
 		}
 	}))
 
-	const stats = {
-		episodes: data._embedded.episodes.length
-	}
-
 	await db.show.create({
 		data: {
 			...show,
-			seasons: { create: seasonsWithEpisodes },
-			stats: { create: stats }
+			seasons: { create: seasonsWithEpisodes }
 		}
 	})
 }
 
 export async function getShows() {
-	return await db.show.findMany({
-		include: { stats: true }
-	})
+	return await db.show.findMany({})
 }
 
 export async function getSeasons(slug: string) {
@@ -129,93 +124,143 @@ export async function getEpisodes(slug: string) {
 	return episodes
 }
 
-async function isShowCompleted(slug: string) {
+export async function showCompleted(slug: string) {
 	const show = await db.show.findUnique({
 		where: { slug },
-		select: { completed: true }
+		select: { completed: true, seasons: true, totalEpisodes: true }
 	})
-	invariant(show, 'Could not find show.')
-	return show.completed
-}
 
-export async function showCompleted(slug: string) {
-	const completed = await isShowCompleted(slug)
+	invariant(show, 'Could not find show.')
 
 	const query = {
 		where: { slug },
-		data: { completed: !completed }
+		data: { completed: !show.completed }
 	}
 
+	// update show, season and episodes
 	await db.show.updateMany(query)
+	await db.season.updateMany(query)
 	await db.episode.updateMany(query)
-	await updateStats(slug)
-}
 
-async function isSeasonCompleted(seasonId: string) {
-	const season = await db.season.findUnique({
-		where: { id: seasonId },
-		select: { slug: true, completed: true }
+	// todo: update show episodes
+	const completedEpisodes = show.completed ? 0 : show.totalEpisodes
+	await db.show.update({
+		where: { slug },
+		data: { completedEpisodes }
 	})
-	invariant(season, 'Could not find season.')
-	return season.completed
+	// ...
+
+	// update completed episodes
+	for (const season of show.seasons) {
+		const currentSeason = await db.season.findUnique({
+			where: { id: season.id },
+			select: { totalEpisodes: true }
+		})
+
+		invariant(currentSeason, 'Could not find season.')
+
+		const completedEpisodes = show.completed ? 0 : currentSeason.totalEpisodes
+
+		await db.season.update({
+			where: { id: season.id },
+			data: { completedEpisodes }
+		})
+	}
 }
 
 export async function seasonCompleted(seasonId: string, slug: string) {
-	const completed = await isSeasonCompleted(seasonId)
+	const season = await db.season.findUnique({
+		where: { id: seasonId },
+		select: { slug: true, completed: true, totalEpisodes: true }
+	})
+
+	invariant(season, 'Could not find season.')
+
+	const completed = !season.completed
+	const completedEpisodes = !season.completed ? season.totalEpisodes : 0
 
 	await db.season.update({
 		where: { id: seasonId },
-		data: { completed: !completed }
+		data: { completed, completedEpisodes }
 	})
 
 	await db.episode.updateMany({
 		where: { slug },
-		data: { completed: !completed }
+		data: { completed: !season.completed }
 	})
 
-	await updateStats(slug)
+	// todo: update episodes for show
+	const completedShowEpisodes = season.completed ? 0 : season.totalEpisodes
+	await db.show.update({
+		where: { slug: season.slug },
+		data: { completedEpisodes: completedShowEpisodes }
+	})
+	// ...
+
+	await isShowCompleted(slug)
 }
 
-async function isEpisodeCompleted(episodeId: string) {
+export async function episodeCompleted(episodeId: string) {
 	const episode = await db.episode.findUnique({
 		where: { id: episodeId },
-		select: { completed: true }
+		select: { seasonId: true, completed: true, slug: true }
 	})
-	invariant(episode, 'Could not find episode.')
-	return episode.completed
-}
 
-export async function episodeCompleted(episodeId: string, slug: string) {
-	const completed = await isEpisodeCompleted(episodeId)
+	invariant(episode, 'Could not find episode.')
 
 	await db.episode.update({
 		where: { id: episodeId },
-		data: { completed: !completed }
+		data: { completed: !episode.completed }
 	})
 
-	await updateStats(slug)
+	// todo: update episodes for show
+	const increment = { increment: 1 }
+	const decrement = { decrement: 1 }
+	await db.show.update({
+		where: { slug: episode.slug },
+		data: { completedEpisodes: episode.completed ? decrement : increment }
+	})
+	// ...
+
+	await isSeasonCompleted(episode.seasonId, episode.completed)
+	await isShowCompleted(episode.slug)
 }
 
-async function updateStats(slug: string) {
-	const count = await db.episode.count({
+async function isShowCompleted(slug: string) {
+	const numberOfSeasons = await db.season.count({
+		where: { slug }
+	})
+
+	const completedSeasons = await db.season.count({
 		where: {
-			slug,
+			slug: slug,
 			completed: { equals: true }
 		}
 	})
 
+	const showCompleted = numberOfSeasons === completedSeasons
+
 	await db.show.update({
-		where: { slug },
-		data: {
-			stats: {
-				update: { watched: count }
-			}
-		}
+		where: { slug: slug },
+		data: { completed: showCompleted }
 	})
 }
 
-export async function getStats(showId: string) {
-	return await db.stats.findUnique({
-		where: { id: showId }
+async function isSeasonCompleted(seasonId: string, completed: boolean) {
+	const increment = { increment: 1 }
+	const decrement = { decrement: 1 }
+
+	const seasonUpdate = await db.season.update({
+		where: { id: seasonId },
+		data: { completedEpisodes: !completed ? increment : decrement },
+		select: { completedEpisodes: true, totalEpisodes: true, slug: true }
+	})
+
+	const seasonCompleted =
+		seasonUpdate.completedEpisodes === seasonUpdate.totalEpisodes
+
+	await db.season.update({
+		where: { id: seasonId },
+		data: { completed: seasonCompleted }
 	})
 }

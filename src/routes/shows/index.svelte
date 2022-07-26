@@ -14,7 +14,7 @@
 	{/if}
 
 	<section class="items">
-		{#each shows as { name, slug, image, completed, stats }}
+		{#each shows as { name, slug, image, completed, completedEpisodes, totalEpisodes }}
 			<article class="item">
 				<a href="/shows/{slug}">
 					<img class="show" class:completed src={image} alt={name} />
@@ -22,7 +22,7 @@
 
 				<div class="stats">
 					<span class="completion">
-						{completion(stats.episodes, stats.watched)}
+						{completion(totalEpisodes, completedEpisodes)}
 					</span>
 				</div>
 
